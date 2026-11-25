@@ -55,7 +55,7 @@ function parseJsonArray(data: unknown): unknown[] {
   return []
 }
 
-function parsePaymentMethods(
+export function parsePaymentMethods(
   data: unknown,
   stripeMinTopup: number
 ): PaymentMethod[] {
@@ -74,6 +74,8 @@ function parsePaymentMethods(
         type,
         color: typeof item.color === 'string' ? item.color : undefined,
         icon: typeof item.icon === 'string' ? item.icon : undefined,
+        // Tells the wallet which gateway handles this method (e.g. bepusdt).
+        provider: typeof item.provider === 'string' ? item.provider : undefined,
         min_topup:
           type === 'stripe' && normalizedMinTopup <= 0
             ? stripeMinTopup

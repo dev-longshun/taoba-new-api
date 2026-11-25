@@ -4,3 +4,5 @@ updates:
     directory: "/web"
     schedule:
       interval: "weekly"
+    # taoba fork: dependencies follow upstream merges, so no version update PRs.
+    open-pull-requests-limit: 0

@@ -56,6 +56,10 @@ describe('payment dispatch', () => {
           calls.push('pancake')
           return false
         },
+        bepusdt: async () => {
+          calls.push('bepusdt')
+          return false
+        },
       }
     )
 
@@ -76,10 +80,35 @@ describe('payment dispatch', () => {
           return true
         },
         waffoPancake: async () => false,
+        bepusdt: async () => false,
       }
     )
 
     expect(success).toBe(false)
     expect(called).toBe(false)
+  })
+
+  test('sends a BEpusdt method to the USDT flow with its trade type', async () => {
+    const calls: string[] = []
+    const success = await dispatchSelectedPayment(
+      { name: 'USDT-TRC20', type: 'usdt.trc20', provider: 'bepusdt' },
+      50,
+      null,
+      {
+        regular: async () => {
+          calls.push('regular')
+          return false
+        },
+        waffo: async () => false,
+        waffoPancake: async () => false,
+        bepusdt: async (amount, tradeType) => {
+          calls.push(`bepusdt:${amount}:${tradeType}`)
+          return true
+        },
+      }
+    )
+
+    expect(success).toBe(true)
+    expect(calls).toEqual(['bepusdt:50:usdt.trc20'])
   })
 })

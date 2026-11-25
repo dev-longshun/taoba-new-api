@@ -39,6 +39,19 @@ export type PaymentResponse = ApiResponse<Record<string, unknown>> & {
   url?: string
 }
 export type StripePaymentResponse = ApiResponse<{ pay_link: string }>
+export type BEpusdtPaymentResponse = ApiResponse<{ usdt?: BEpusdtOrderPayload }>
+export type BEpusdtOrderStatusResponse = ApiResponse<{ status: string }>
+
+/** USDT order as returned by the BEpusdt payment endpoint */
+export interface BEpusdtOrderPayload {
+  trade_no: string
+  trade_id: string
+  trade_type: string
+  address: string
+  amount: string
+  money: string
+  expire_in: number
+}
 export type AffiliateCodeResponse = ApiResponse<string>
 export type AffiliateTransferResponse = ApiResponse
 export type CreemPaymentResponse = ApiResponse<{ checkout_url: string }>
@@ -100,6 +113,8 @@ export interface PaymentMethod {
   min_topup?: number
   /** Optional react-icons component name or safe icon URL */
   icon?: string
+  /** Gateway serving this method when it is not the default Epay flow */
+  provider?: string
 }
 
 /**

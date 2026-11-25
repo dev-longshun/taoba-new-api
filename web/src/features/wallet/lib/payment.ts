@@ -19,6 +19,7 @@ For commercial licensing, please contact support@quantumnous.com
 import { getServerMessage } from '@/lib/server-error-message'
 
 import {
+  BEPUSDT_PROVIDER,
   PAYMENT_TYPES,
   DEFAULT_PRESET_MULTIPLIERS,
   DEFAULT_PAYMENT_TYPE,
@@ -111,8 +112,13 @@ export function isWaffoPancakePayment(paymentType: string): boolean {
   return paymentType === PAYMENT_TYPES.WAFFO_PANCAKE
 }
 
+export function isBEpusdtPayment(paymentMethod: PaymentMethod): boolean {
+  return paymentMethod.provider === BEPUSDT_PROVIDER
+}
+
 export interface PaymentProcessors {
   regular: (topupAmount: number, paymentType: string) => Promise<boolean>
+  bepusdt: (topupAmount: number, paymentType: string) => Promise<boolean>
   waffo: (topupAmount: number, payMethodIndex: number) => Promise<boolean>
   waffoPancake: (topupAmount: number) => Promise<boolean>
 }
@@ -132,6 +138,10 @@ export async function dispatchSelectedPayment(
 
   if (isWaffoPancakePayment(paymentMethod.type)) {
     return processors.waffoPancake(topupAmount)
+  }
+
+  if (isBEpusdtPayment(paymentMethod)) {
+    return processors.bepusdt(topupAmount, paymentMethod.type)
   }
 
   return processors.regular(topupAmount, paymentMethod.type)

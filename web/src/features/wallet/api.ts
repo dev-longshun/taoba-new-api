@@ -29,6 +29,8 @@ import type {
   AmountResponse,
   PaymentResponse,
   StripePaymentResponse,
+  BEpusdtPaymentResponse,
+  BEpusdtOrderStatusResponse,
   AffiliateCodeResponse,
   AffiliateTransferResponse,
   BillingHistoryResponse,
@@ -119,6 +121,31 @@ export async function requestPayment(
     ...res.data,
     url: res.data.url || (res as unknown as { url?: string }).url,
   }
+}
+
+/**
+ * Request a USDT order from the BEpusdt gateway
+ */
+export async function requestBEpusdtPayment(
+  request: PaymentRequest
+): Promise<BEpusdtPaymentResponse> {
+  const res = await api.post('/api/user/bepusdt/pay', request, {
+    skipBusinessError: true,
+  } as Record<string, unknown>)
+  return res.data
+}
+
+/**
+ * Get the status of the current user's USDT order
+ */
+export async function getBEpusdtOrderStatus(
+  tradeNo: string
+): Promise<BEpusdtOrderStatusResponse> {
+  const res = await api.get('/api/user/bepusdt/order_status', {
+    params: { trade_no: tradeNo },
+    skipBusinessError: true,
+  } as Record<string, unknown>)
+  return res.data
 }
 
 /**

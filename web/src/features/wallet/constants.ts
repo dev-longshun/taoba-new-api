@@ -60,6 +60,24 @@ export const PAYMENT_ICON_COLORS = {
  */
 export const DEFAULT_DISCOUNT_RATE = 1.0
 
+/** Provider tag the backend puts on BEpusdt (USDT) payment methods */
+export const BEPUSDT_PROVIDER = 'bepusdt'
+
+/** How often the USDT payment dialog checks whether the order is paid */
+export const BEPUSDT_STATUS_POLL_MS = 3000
+
+/** Network names shown for BEpusdt trade types */
+export const BEPUSDT_NETWORK_LABELS: Record<string, string> = {
+  'usdt.trc20': 'TRC20 (Tron)',
+  'usdt.erc20': 'ERC20 (Ethereum)',
+  'usdt.bep20': 'BEP20 (BSC)',
+  'usdt.polygon': 'Polygon',
+  'usdt.arbitrum': 'Arbitrum One',
+  'usdt.xlayer': 'X Layer',
+  'usdt.plasma': 'Plasma',
+  'usdt.solana': 'Solana',
+}
+
 /**
  * Default minimum topup amount
  */

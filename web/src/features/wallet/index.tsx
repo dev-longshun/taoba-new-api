@@ -29,6 +29,7 @@ import { BillingHistoryDialog } from './components/dialogs/billing-history-dialo
 import { CreemConfirmDialog } from './components/dialogs/creem-confirm-dialog'
 import { PaymentConfirmDialog } from './components/dialogs/payment-confirm-dialog'
 import { TransferDialog } from './components/dialogs/transfer-dialog'
+import { UsdtPaymentDialog } from './components/dialogs/usdt-payment-dialog'
 import { RechargeFormCard } from './components/recharge-form-card'
 import { SubscriptionPlansCard } from './components/subscription-plans-card'
 import { WalletStatsCard } from './components/wallet-stats-card'
@@ -41,6 +42,7 @@ import {
   useCreemPayment,
   useWaffoPayment,
   useWaffoPancakePayment,
+  useBEpusdtPayment,
 } from './hooks'
 import {
   getDefaultPaymentType,
@@ -108,6 +110,19 @@ export function Wallet(props: WalletProps) {
   const { processing: waffoProcessing, processWaffoPayment } = useWaffoPayment()
   const { processing: pancakeProcessing, processWaffoPancakePayment } =
     useWaffoPancakePayment()
+  const {
+    processing: bepusdtProcessing,
+    order: usdtOrder,
+    processBEpusdtPayment,
+    clearOrder: clearUsdtOrder,
+  } = useBEpusdtPayment()
+
+  const handleUsdtDialogOpenChange = useCallback(
+    (open: boolean) => {
+      if (!open) clearUsdtOrder()
+    },
+    [clearUsdtOrder]
+  )
 
   // Fetch and refresh user data
   const fetchUser = useCallback(async () => {
@@ -202,6 +217,7 @@ export function Wallet(props: WalletProps) {
         regular: processPayment,
         waffo: processWaffoPayment,
         waffoPancake: processWaffoPancakePayment,
+        bepusdt: processBEpusdtPayment,
       }
     )
 
@@ -360,9 +376,20 @@ export function Wallet(props: WalletProps) {
         paymentAmount={paymentAmount}
         paymentMethod={selectedPaymentMethod}
         calculating={calculating}
-        processing={processing || waffoProcessing || pancakeProcessing}
+        processing={
+          processing ||
+          waffoProcessing ||
+          pancakeProcessing ||
+          bepusdtProcessing
+        }
         discountRate={getDiscountRate()}
         usdExchangeRate={effectiveUsdExchangeRate}
+      />
+
+      <UsdtPaymentDialog
+        order={usdtOrder}
+        onOpenChange={handleUsdtDialogOpenChange}
+        onPaid={fetchUser}
       />
 
       <TransferDialog

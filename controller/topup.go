@@ -26,10 +26,18 @@ import (
 func GetTopUpInfo(c *gin.Context) {
 	complianceConfirmed := operation_setting.IsPaymentComplianceConfirmed()
 
-	// 获取支付方式
-	payMethods := operation_setting.PayMethods
-	if !complianceConfirmed {
-		payMethods = []map[string]string{}
+	// 获取支付方式：易支付方式只在易支付可用时列出，其后是 BEpusdt 的 USDT 网络。
+	// 新建切片，避免 append 改到共享的 PayMethods。
+	payMethods := []map[string]string{}
+	if isEpayTopUpEnabled() {
+		payMethods = append(payMethods, operation_setting.PayMethods...)
+	}
+	enableBEpusdt := isBEpusdtTopUpEnabled()
+	if enableBEpusdt {
+		for _, method := range setting.GetBEpusdtPayMethods() {
+			method["provider"] = model.PaymentProviderBEpusdt
+			payMethods = append(payMethods, method)
+		}
 	}
 
 	// 如果启用了 Stripe 支付，添加到支付方法列表
@@ -98,7 +106,8 @@ func GetTopUpInfo(c *gin.Context) {
 	}
 
 	data := gin.H{
-		"enable_online_topup":              isEpayTopUpEnabled(),
+		"enable_online_topup":              isEpayTopUpEnabled() || enableBEpusdt,
+		"enable_bepusdt_topup":             enableBEpusdt,
 		"enable_stripe_topup":              isStripeTopUpEnabled(),
 		"enable_creem_topup":               isCreemTopUpEnabled(),
 		"enable_waffo_topup":               enableWaffo,
